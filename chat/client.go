@@ -86,3 +86,12 @@ func (r *room) ServerHTTP(w http.ResponseWriter, req *http.Request) {
 	go client.write()
 	client.read()
 }
+
+func newRoom() *room {
+	return &room{
+		forward: make(chan []byte),
+		join:    make(chan *client),
+		leave:   make(chan *client),
+		clients: make(map[*client]bool),
+	}
+}
