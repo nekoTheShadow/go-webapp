@@ -28,7 +28,7 @@ func main() {
 		github.New(GithubClientId, GithubClientSecret, "http://localhost:3000/auth/callback/github"),
 	)
 
-	r := newRoom(UseAuthAvatar)
+	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
