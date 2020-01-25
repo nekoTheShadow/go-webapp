@@ -30,6 +30,7 @@ func main() {
 
 	r := newRoom(UseGravatar)
 	r.tracer = trace.New(os.Stdout)
+
 	http.Handle("/chat", MustAuth(&templateHandler{filename: "chat.html"}))
 	http.Handle("/login", &templateHandler{filename: "login.html"})
 	http.HandleFunc("/auth/", loginHandler)
@@ -44,6 +45,8 @@ func main() {
 		w.Header()["Location"] = []string{"/chat"}
 		w.WriteHeader(http.StatusTemporaryRedirect)
 	})
+	http.Handle("/upload", &templateHandler{filename: "upload.html"})
+
 	go r.run()
 	log.Println("Webサーバを開始します。ポート: " + *addr)
 	if err := http.ListenAndServe(*addr, nil); err != nil {
