@@ -17,7 +17,7 @@ import (
 	"github.com/stretchr/objx"
 )
 
-var avatars Avatar = UseFileSystemAvatar
+var avatars Avatar = TryAvatars{UseFileSystemAvatar, UseAuthAvatar, UseGravatar}
 
 func main() {
 	addr := flag.String("addr", ":8080", "アプリケーションのアドレス")
