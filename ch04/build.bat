@@ -5,7 +5,7 @@ REM 設定例: set BHT_APIKEY=1234567890abcd
 
 set workspace=%~dp0
 
-for %%f in (coolify domainnify sprinkle synonyms) do (
+for %%f in (coolify domainnify sprinkle synonyms available) do (
     cd %workspace%
     del /Q %%f.exe
     cd ..\%%f
@@ -13,4 +13,4 @@ for %%f in (coolify domainnify sprinkle synonyms) do (
 )
 
 cd %workspace%
-synonyms.exe | sprinkle.exe | coolify.exe | domainnify.exe -t com -t net
+synonyms.exe | sprinkle.exe | coolify.exe | domainnify.exe -t com -t net | available.exe
