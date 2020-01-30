@@ -75,6 +75,7 @@ func setupTwitterAuth() {
 
 func makeRequest(req *http.Request, params url.Values) (*http.Response, error) {
 	authSetupOnce.Do(func() {
+		setupTwitterAuth()
 		httpClient = &http.Client{
 			Transport: &http.Transport{Dial: dial},
 		}
