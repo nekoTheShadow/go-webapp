@@ -56,14 +56,19 @@ db.polls.insert({
 # イメージのダウンロード
 docker pull nsqio/nsq
 
-# コンテナの作成
-docker run                      ^
-  -d                            ^
-  --name go-webapp-nsqd         ^
-  -p 4150:4150 -p 4151:4151     ^
-  nsqio/nsq /nsqd               ^
-  --broadcast-address=localhost ^
-  --lookupd-tcp-address=localhost:4160
+# コンテナの作成 (nsqlookup)
+docker run -d                 ^
+  --name go-webapp-nsqlookupd ^
+  -p 4160:4160 -p 4161:4161   ^
+  nsqio/nsq /nsqlookupd
+
+# コンテナの作成 (nsqd)
+docker run -d                               ^
+  --name go-webapp-nsqd                     ^
+  -p 4150:4150 -p 4151:4151                 ^
+  nsqio/nsq /nsqd                           ^
+  --broadcast-address=192.168.99.100        ^
+  --lookupd-tcp-address=192.168.99.100:4160
 ```
 
 この手順で実施すると、`nsq_tail`が正常に動作しない。そこで以下のURLにアクセスすることで`nsqd`が想定通り動作していることを確認する: `http://192.168.99.100:4151/stats`

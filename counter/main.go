@@ -33,7 +33,11 @@ func main() {
 	}()
 
 	log.Println("データベースに接続します")
-	db, err := mgo.Dial("192.168.99.100")
+	db, err := mgo.DialWithInfo(&mgo.DialInfo{
+		Addrs:    []string{"192.168.99.100:27017"},
+		Username: "dev",
+		Password: "password",
+	})
 	if err != nil {
 		fatal(err)
 		return
@@ -55,7 +59,7 @@ func main() {
 	q.AddHandler(nsq.HandlerFunc(func(m *nsq.Message) error {
 		countsLock.Lock()
 		defer countsLock.Unlock()
-		if counts != nil {
+		if counts == nil {
 			counts = map[string]int{}
 		}
 		vote := string(m.Body)
@@ -71,12 +75,12 @@ func main() {
 	var updater *time.Timer
 	updater = time.AfterFunc(updateDuration, func() {
 		countsLock.Lock()
-		defer countsLock.Lock()
+		defer countsLock.Unlock()
 		if len(counts) == 0 {
-			log.Panicln("新しい投票はありません。データベースの更新をスキップします")
+			log.Println("新しい投票はありません。データベースの更新をスキップします")
 		} else {
 			log.Println("データベースを更新します。")
-			log.Printf("データベースを更新します…")
+			log.Println(counts)
 			ok := true
 			for option, count := range counts {
 				sel := bson.M{"options": bson.M{"$in": []string{option}}}
@@ -93,8 +97,8 @@ func main() {
 				counts = nil
 			}
 		}
+		updater.Reset(updateDuration)
 	})
-	updater.Reset(updateDuration)
 
 	termChan := make(chan os.Signal, 1)
 	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
