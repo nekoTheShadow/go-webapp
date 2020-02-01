@@ -71,4 +71,8 @@ docker run -d                               ^
   --lookupd-tcp-address=192.168.99.100:4160
 ```
 
-この手順で実施すると、`nsq_tail`が正常に動作しない。そこで以下のURLにアクセスすることで`nsqd`が想定通り動作していることを確認する: `http://192.168.99.100:4151/stats`
+この手順の場合、`nsq_tail`は以下の手順で利用すること:
+
+```
+docker run --rm nsqio/nsq /nsq_tail --lookupd-http-address=192.168.99.100:4161 -topic votes
+```
