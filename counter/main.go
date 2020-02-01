@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"log"
 	"os"
+	"os/signal"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/nsqio/go-nsq"
@@ -93,4 +95,16 @@ func main() {
 		}
 	})
 	updater.Reset(updateDuration)
+
+	termChan := make(chan os.Signal, 1)
+	signal.Notify(termChan, syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
+	for {
+		select {
+		case <-termChan:
+			updater.Stop()
+			q.Stop()
+		case <-q.StopChan:
+			return
+		}
+	}
 }
