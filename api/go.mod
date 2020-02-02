@@ -9,4 +9,5 @@ require (
 	gopkg.in/check.v1 v1.0.0-20190902080502-41f04d3bba15 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
 	gopkg.in/tylerb/graceful.v1 v1.2.15
+	gopkg.in/yaml.v2 v2.2.8 // indirect
 )

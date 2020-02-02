@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"gopkg.in/mgo.v2"
+	"gopkg.in/mgo.v2/bson"
 	"gopkg.in/tylerb/graceful.v1"
 )
 
@@ -65,4 +66,11 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 		w.Header().Set("Access-Control-Expose-Headers", "Location")
 		fn(w, r)
 	}
+}
+
+type poll struct {
+	ID      bson.ObjectId  `bson:"_id" json:"id"`
+	Title   string         `json:title`
+	Options []string       `json:"opstions"`
+	Results map[string]int `json:"results,omitempty"`
 }
