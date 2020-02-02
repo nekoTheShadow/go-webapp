@@ -17,20 +17,19 @@
         </div>
     </body>
 
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
     <script>
         $(function(){
             var update = function() {
                 $.get("http://localhost:8080/polls/?key=abc123", null, null, "json")
                  .done(function(polls){
-                     $("polls").empty()
+                     $("#polls").empty()
                      for (var p in polls){
                          var poll = polls[p];
                          $("#polls").append(
                              $("<li>").append(
-                                 $("<a>").attr("href", "view.html?poll=polls/" + poll.id)
-                                         .text(poll.title)
+                                 $("<a>").attr("href", "view.html?poll=polls/" + poll.id).text(poll.title)
                              )
                          )
                      }
