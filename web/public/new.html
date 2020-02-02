@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>調査項目の作成</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-md-4"></div>
+            <form id="poll" role="form" class="col-md-4">
+                <h2>調査項目の作成</h2>
+                <div class="form-group">
+                    <label for="title">タイトル</label>
+                    <input type="text" class="form-control" id="title" placeholder="Title">
+                </div>
+                <div class="form-group">
+                    <label for="options">選択肢</label>
+                    <input type="text" class="form-control" id="options" placeholder="Options">
+                    <p class="help-block">(カンマで区切って入力)</p>
+                </div>
+                <button type="submit" class="btn btn-primary">作成</button>または<a href="/">キャンセル</a>
+            </form>
+            <div class="col-md-4"></div>
+        </div>
+    </body>
+
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script>
+        $(function(){
+            var form = $("form#poll");
+            form.submit(function(e){
+                e.preventDefault();
+                var title = form.find("input[id='title']").val();
+                var options = form.find("input[id='options']").val();
+                options = options.split(",");
+                for (var opt in options) {
+                    options[opt] = options[opt].trim();
+                }
+                $.post("http://localhost:8080/polls/?key=abc123", JSON.stringify({
+                    title: title,
+                    options: options
+                })).done(function(d, s, r){
+                    location.href = "view.html?poll=" + r.getResponseHeader("Location");
+                });
+            })
+        });
+    </script>
+</html>
