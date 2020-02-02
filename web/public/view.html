@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>調査項目の詳細</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+    </head>
+    <body>
+        <div class="container">
+            <div class="col-md-4"></div>
+            <div class="col-md-4">
+                <h1 data-field="title">...</h1>
+                <ul id="options"></ul>
+                <div id="chart"></div>
+                <div>
+                    <button class="btn btn-sm" id="delete">この調査項目を削除</button>
+                </div>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </body>
+
+    <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+    <script>
+        google.load('visualization', '1.0', {'packages' : ['corechart']});
+        google.setOnLoadCallback(function(){
+            $(function(){
+                var chart;
+                var poll = location.hrefp.split("poll=")[1];
+                var update = function() {
+                    $.get("http://localhost:8080/" + poll + "?key=abc123", null, nul, "json")
+                     .done(function(polls){
+                         var poll = polls[0];
+                         $('[data-field="title"]').text(poll.title);
+                         $('#options').empty();
+                         for (var o in poll.results) {
+                             $("#options").append(
+                                 $("<li>").append(
+                                     $("<small>").addClass("label label-default").text(poll.result[o]),
+                                     " ",
+                                     o
+                                 )
+                             )
+                         }
+                         if (poll.results) {
+                            var data = new google.visualization.DataTable();
+                            data.addColumn("string", "Option");
+                            data.addColumn("number", "Votes");
+                            for (var o in poll.results) {
+                                data.addRow([o, poll.results[o]])
+                            }
+                            if (!chart) {
+                                chart = new google.visualization.PieChart(document.getElementById('chart'));
+                            }
+                            chart.draw(data, {is3D : true});
+                         }
+                     });
+                     window.setTimeout(update, 1000);
+                }
+                update();
+                $("#delete").click(function() {
+                    if (confirm("本当に削除しますか?")) {
+                        $.ajax({
+                            url : "http://localhost:8080/" + poll + "?key=abc123",
+                            type : "DELETE"
+                        }).done(function(){
+                            location.href = '/';
+                        });
+                    }
+                })
+            
+            });
+        });
+
+    </script>
+</html>
