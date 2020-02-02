@@ -14,10 +14,17 @@ import (
 
 func main() {
 	var addr = flag.String("addr", ":8080", "エンドポイントのアドレス")
-	var mongo = flag.String("mongo", "localhost", "MongoDBのアドレス")
+	var mongo = flag.String("mongo", "192.168.99.100:27017", "MongoDBのアドレス")
+	var username = flag.String("username", "dev", "MongoDBのユーザ名")
+	var passowrd = flag.String("password", "password", "MongoDBのパスワード")
 	flag.Parse()
-	log.Println("MongoDBに接続します", mongo)
-	db, err := mgo.Dial(*mongo)
+
+	log.Println("MongoDBに接続します", *mongo)
+	db, err := mgo.DialWithInfo(&mgo.DialInfo{
+		Addrs:    []string{*mongo},
+		Username: *username,
+		Password: *passowrd,
+	})
 	if err != nil {
 		log.Fatalln("MongoDBへの接続に失敗しました: ", err)
 	}
@@ -71,8 +78,8 @@ func withCORS(fn http.HandlerFunc) http.HandlerFunc {
 
 type poll struct {
 	ID      bson.ObjectId  `bson:"_id" json:"id"`
-	Title   string         `json:title`
-	Options []string       `json:"opstions"`
+	Title   string         `json:"title"`
+	Options []string       `json:"options"`
 	Results map[string]int `json:"results,omitempty"`
 }
 
@@ -92,7 +99,20 @@ func handlePolls(w http.ResponseWriter, r *http.Request) {
 }
 
 func handlePollsGet(w http.ResponseWriter, r *http.Request) {
-	respondErr(w, r, http.StatusInternalServerError, errors.New("未実装です"))
+	db := GetVars(r, "db").(*mgo.Database)
+	c := db.C("polls")
+	var q *mgo.Query
+	p := NewPath(r.URL.Path)
+	if p.HasID() {
+		q = c.FindId(bson.ObjectIdHex(p.ID))
+	} else {
+		q = c.Find(nil)
+	}
+	var result []*poll
+	if err := q.All(&result); err != nil {
+		respondErr(w, r, http.StatusInternalServerError, err)
+	}
+	respond(w, r, http.StatusOK, &result)
 }
 
 func handlePollsPost(w http.ResponseWriter, r *http.Request) {
