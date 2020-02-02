@@ -93,6 +93,10 @@ func handlePolls(w http.ResponseWriter, r *http.Request) {
 	case "DELETE":
 		handlePollsDelete(w, r)
 		return
+	case "OPTIONS":
+		w.Header().Add("Access-Control-Allow-Methods", "DELETE")
+		respond(w, r, http.StatusOK, nil)
+		return
 	}
 	respondHTTPErr(w, r, http.StatusNotFound)
 }
