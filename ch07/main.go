@@ -1,18 +1,15 @@
 package main
 
 import (
+	"ch07/meander"
 	"encoding/json"
 	"net/http"
-	"os"
 	"runtime"
 	"strconv"
 	"strings"
-
-	"github.com/nekoTheShadow/go-webapp/meander"
 )
 
 func main() {
-	meander.APIKey = os.Getenv("GOOGLE_PLACES_API_KEY")
 	runtime.GOMAXPROCS(runtime.NumCPU())
 	http.HandleFunc("/journeys", cors(func(w http.ResponseWriter, r *http.Request) {
 		respond(w, r, meander.Journeys)

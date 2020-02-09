@@ -1,10 +1,10 @@
 package meander_test
 
 import (
+	"ch07/meander"
 	"testing"
 
 	"github.com/matryer/is"
-	"github.com/nekoTheShadow/go-webapp/meander"
 )
 
 func TestCostValues(t *testing.T) {
