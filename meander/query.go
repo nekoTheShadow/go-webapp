@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var APIKey string
+
 type Place struct {
 	*googleGeometry `json:"geometry"`
 	Name            string         `json:"name"`
@@ -66,8 +68,8 @@ func (q *Query) find(types string) (*googleResponse, error) {
 	vals.Set("key", APIKey)
 	if len(q.CostRangeStr) > 0 {
 		r := ParseCostRange(q.CostRangeStr)
-		vals.Set("minprice", fmt.Sprint("%d", int(r.From)-1))
-		vals.Set("maxprice", fmt.Sprint("%d", int(r.To)-1))
+		vals.Set("minprice", fmt.Sprintf("%d", int(r.From)-1))
+		vals.Set("maxprice", fmt.Sprintf("%d", int(r.To)-1))
 	}
 
 	res, err := http.Get(u + "?" + vals.Encode())

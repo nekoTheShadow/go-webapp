@@ -1,7 +1,5 @@
-`meander`ディレクトリの直下に`secret.go`を作成し、以下の通りに記述すること。
+実行前に以下の環境変数を設定すること。
 
-```go:secret.go
-package meander
-
-var APIKey = "Google Places APIのAPI KEY"
+```
+set GOOGLE_PLACES_API_KEY=Google Places APIのAPI KEY
 ```
