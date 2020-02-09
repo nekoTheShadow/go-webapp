@@ -1,4 +1,4 @@
-module ch07
+module meander
 
 go 1.13
 

@@ -1,7 +1,7 @@
 package meander_test
 
 import (
-	"ch07/meander"
+	"meander"
 	"testing"
 
 	"github.com/matryer/is"
