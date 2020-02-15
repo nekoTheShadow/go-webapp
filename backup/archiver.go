@@ -2,6 +2,7 @@ package backup
 
 import (
 	"archive/zip"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -9,6 +10,7 @@ import (
 
 type Archiver interface {
 	Archive(src, dst string) error
+	DestFmt() func(int64) string
 }
 
 type zipper struct{}
@@ -49,4 +51,8 @@ func (z *zipper) Archive(src, dst string) error {
 		io.Copy(f, in)
 		return nil
 	})
+}
+
+func (*zipper) DestFmt() func(int64) string {
+	return func(i int64) string { return fmt.Sprintf("%d.zip", i) }
 }
