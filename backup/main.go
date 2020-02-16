@@ -16,6 +16,10 @@ type path struct {
 	Hash string
 }
 
+func (p path) String() string {
+	return fmt.Sprintf("%s [%s]", p.Path, p.Hash)
+}
+
 func main() {
 	var fatalErr error
 	defer func() {
@@ -72,21 +76,42 @@ func main() {
 			fmt.Printf("+ %s\n", path)
 		}
 	case "remove":
-		var path path
-		col.RemoveEach(func(i int, data []byte) (bool, bool) {
+		// https://github.com/matryer/filedb の 実装が誤っているため、Windowsでは正しく動作しない。
+		// 上記コードを参考にして独自実装しておく
+
+		// 残すものを配列pathsにピックアップ
+		paths := []path{}
+		col.ForEach(func(i int, data []byte) bool {
+			var path path
 			err := json.Unmarshal(data, &path)
 			if err != nil {
 				fatalErr = err
-				return false, true
+				return true
 			}
 
+			remain := true
 			for _, p := range args[1:] {
 				if path.Path == p {
-					fmt.Printf("- %s\n", path)
-					return true, false
+					remain = false
+					break
 				}
 			}
-			return false, false
+
+			if remain {
+				paths = append(paths, path)
+			}
+			return false
 		})
+
+		// 全件削除
+		col.RemoveEach(func(i int, data []byte) (bool, bool) { return true, false })
+
+		// 先の処理で残したものを再書き込み
+		for _, path := range paths {
+			if err := col.InsertJSON(path); err != nil {
+				fatalErr = err
+				return
+			}
+		}
 	}
 }
