@@ -86,3 +86,34 @@ Loop:
 		}
 	}
 }
+
+func check(m *backup.Monitor, col *filedb.C) {
+	log.Println("チェックします…")
+	counter, err := m.Now()
+	if err != nil {
+		log.Panicln("バックアップに失敗しました")
+	}
+
+	if counter == 0 {
+		log.Println("変更はありません")
+		return
+	}
+
+	log.Printf("%dこのディレクトリをアーカイブしました\n", counter)
+	var path path
+	col.SelectEach(func(_ int, data []byte) (bool, []byte, bool) {
+		if err := json.Unmarshal(data, &path); err != nil {
+			log.Println("JSONデータの書き出しに失敗しました。次の項目に進みます: ", err)
+			return true, data, false
+		}
+
+		path.Hash, _ = m.Paths[path.Path]
+		newdata, err := json.Marshal(&path)
+		if err != nil {
+			log.Println("JSONデータの書き出しに失敗しました。次の項目に進みます: ", err)
+			return true, data, false
+		}
+		return true, newdata, false
+	})
+
+}
