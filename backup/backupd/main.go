@@ -5,7 +5,12 @@ import (
 	"encoding/json"
 	"errors"
 	"flag"
+	"fmt"
 	"log"
+	"os"
+	"os/signal"
+	"syscall"
+	"time"
 
 	"github.com/matryer/filedb"
 )
@@ -51,7 +56,7 @@ func main() {
 	col.ForEach(func(_ int, data []byte) bool {
 		if err := json.Unmarshal(data, &path); err != nil {
 			fatalErr = err
-			return
+			return true
 		}
 		m.Paths[path.Path] = path.Hash
 		return false
@@ -64,5 +69,20 @@ func main() {
 	if len(m.Paths) < 1 {
 		fatalErr = errors.New("パスがありません。backupツールを使って追加してください")
 		return
+	}
+
+	check(m, col)
+	signalChan := make(chan os.Signal, 1)
+	signal.Notify(signalChan, syscall.SIGINT, syscall.SIGTERM)
+Loop:
+	for {
+		select {
+		case <-time.After(time.Duration(*interval) * time.Second):
+			check(m, col)
+		case <-signalChan:
+			fmt.Println()
+			log.Printf("終了します")
+			break Loop
+		}
 	}
 }
