@@ -2,6 +2,8 @@ package main
 
 import (
 	"backup/backup"
+	"encoding/json"
+	"errors"
 	"flag"
 	"log"
 
@@ -45,4 +47,22 @@ func main() {
 		return
 	}
 
+	var path path
+	col.ForEach(func(_ int, data []byte) bool {
+		if err := json.Unmarshal(data, &path); err != nil {
+			fatalErr = err
+			return
+		}
+		m.Paths[path.Path] = path.Hash
+		return false
+	})
+
+	if fatalErr != nil {
+		return
+	}
+
+	if len(m.Paths) < 1 {
+		fatalErr = errors.New("パスがありません。backupツールを使って追加してください")
+		return
+	}
 }
