@@ -8,6 +8,11 @@ import (
 	"github.com/matryer/filedb"
 )
 
+type path struct {
+	Path string
+	Hash string
+}
+
 func main() {
 	var fatalErr error
 	defer func() {
