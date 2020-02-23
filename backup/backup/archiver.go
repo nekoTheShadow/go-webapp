@@ -15,6 +15,8 @@ type Archiver interface {
 
 type zipper struct{}
 
+var ZIP Archiver = (*zipper)(nil)
+
 func (z *zipper) Archive(src, dst string) error {
 	if err := os.MkdirAll(filepath.Dir(dst), 0777); err != nil {
 		return err
